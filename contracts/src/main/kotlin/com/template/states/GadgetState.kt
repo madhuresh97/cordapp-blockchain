@@ -16,10 +16,10 @@ import java.util.*
 data class GadgetState(
         val to: AbstractParty,
         val from: AbstractParty,
-        productID: UUID,
-        productName: String,
-        productColour: String,
-        Status: String
+        val productID: UUID,
+        val productName: String,
+        val productColour: String,
+        val Status: String
 ): ContractState{
-    override val participants: List<AbstractParty> = listOf(productID)
+    override val participants: List<AbstractParty> = listOf(to, from)
 }
