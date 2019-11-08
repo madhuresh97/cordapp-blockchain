@@ -7,48 +7,46 @@ import net.corda.core.contracts.Command
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.contracts.requireThat
 import net.corda.core.flows.*
+import net.corda.core.identity.AbstractParty
 import net.corda.core.identity.Party
 import net.corda.core.node.ServiceHub
 import net.corda.core.transactions.SignedTransaction
 import net.corda.core.transactions.TransactionBuilder
+import java.util.*
 
 @InitiatingFlow
 @StartableByRPC
 class CarIssueInitiator(
-        val owningBank: Party,
-        val holdingDealer: Party,
-        val manufacturer: Party,
-        val vin: String,
-        val licensePlateNumber: String,
-        val make: String,
-        val model: String,
-        val dealershipLocation: String
+        val to: AbstractParty,
+        val from: AbstractParty,
+        val productID: UUID,
+        val productName: String,
+        val productColour: String,
+        val Status: String
 ) : FlowLogic<SignedTransaction>() {
     @Suspendable
     override fun call(): SignedTransaction {
 
         val notary = serviceHub.networkMapCache.notaryIdentities.first()
-        val command = Command(CarContract.Commands.Issue(), listOf(owningBank, holdingDealer, manufacturer).map { it.owningKey })
-        val carState = CarState(
-                owningBank,
-                holdingDealer,
-                manufacturer,
-                vin,
-                licensePlateNumber,
-                make,
-                model,
-                dealershipLocation,
+        val command = Command(GadgetContract.Commands.Issue(), listOf(to, from).map { it.owningKey })
+        val GadgetState = GadgetState(
+                to,
+                from,
+                productID,
+                productName,
+                productColour,
+                Status,
                 UniqueIdentifier()
         )
 
         val txBuilder = TransactionBuilder(notary)
-                .addOutputState(carState, CarContract.ID)
+                .addOutputState(GadgetState, GadgetContract.ID)
                 .addCommand(command)
 
         txBuilder.verify(serviceHub)
         val tx = serviceHub.signInitialTransaction(txBuilder)
 
-        val sessions = (carState.participants - ourIdentity).map { initiateFlow(it as Party) }
+        val sessions = (GadgetState.participants - ourIdentity).map { initiateFlow(it as Party) }
         val stx = subFlow(CollectSignaturesFlow(tx, sessions))
         return subFlow(FinalityFlow(stx, sessions))
     }

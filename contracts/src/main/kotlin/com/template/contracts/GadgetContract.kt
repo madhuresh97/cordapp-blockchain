@@ -17,11 +17,9 @@ class GadgetContract : Contract {
 
     override fun verify(tx: LedgerTransaction) {
 
-        val command = tx.commands.requireSingleCommand<Commands>().value
-
-        when(command) {
+        when(tx.commands.requireSingleCommand<Commands>().value) {
             is Commands.Issue -> requireThat {
-                val outputState = tx.outputs.get(0).data as GadgetState
+                val outputState = tx.outputs[0].data as GadgetState
                 "The Product colour should be only Red or Black" using (outputState.productColour == "Red")
             }
         }
