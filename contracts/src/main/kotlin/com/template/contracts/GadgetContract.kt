@@ -20,7 +20,7 @@ class GadgetContract : Contract {
         when(tx.commands.requireSingleCommand<Commands>().value) {
             is Commands.Issue -> requireThat {
                 val outputState = tx.outputs[0].data as GadgetState
-                "The Product colour should be only Red or Black" using (outputState.productColour == "Red")
+                "The Product colour should be only Red or Black" using (outputState.productColour == "Red" || outputState.productColour == "Black" )
             }
         }
     }

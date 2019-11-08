@@ -16,7 +16,7 @@ import java.util.*
 
 @InitiatingFlow
 @StartableByRPC
-class CarIssueInitiator(
+class CompanyAInitiator(
         val to: AbstractParty,
         val from: AbstractParty,
         val productID: UUID,
@@ -29,38 +29,38 @@ class CarIssueInitiator(
 
         val notary = serviceHub.networkMapCache.notaryIdentities.first()
         val command = Command(GadgetContract.Commands.Issue(), listOf(to, from).map { it.owningKey })
-        val GadgetState = GadgetState(
+        val gadgetState = GadgetState(
                 to,
                 from,
                 productID,
                 productName,
                 productColour,
-                Status,
-                UniqueIdentifier()
+                Status//,
+              //  UniqueIdentifier()
         )
 
         val txBuilder = TransactionBuilder(notary)
-                .addOutputState(GadgetState, GadgetContract.ID)
+                .addOutputState(gadgetState, GadgetContract.ID)
                 .addCommand(command)
 
         txBuilder.verify(serviceHub)
         val tx = serviceHub.signInitialTransaction(txBuilder)
 
-        val sessions = (GadgetState.participants - ourIdentity).map { initiateFlow(it as Party) }
-        val stx = subFlow(CollectSignaturesFlow(tx, sessions))
-        return subFlow(FinalityFlow(stx, sessions))
+        val sessions = (gadgetState.participants - ourIdentity).map { initiateFlow(it as Party) }   //Takes both the companies in list
+        val stx = subFlow(CollectSignaturesFlow(tx, sessions))          // collects signatures of both companies A and B
+        return subFlow(FinalityFlow(stx, sessions))     // Finalizes the transaction to the notary
     }
 }
 
-@InitiatedBy(CarIssueInitiator::class)
-class CarIssueResponder(val counterpartySession: FlowSession) : FlowLogic<SignedTransaction>() {
+@InitiatedBy(CompanyAInitiator::class)
+class CompanyAResponder(val counterpartySession: FlowSession) : FlowLogic<SignedTransaction>() {
 
     @Suspendable
     override fun call(): SignedTransaction {
         val signedTransactionFlow = object : SignTransactionFlow(counterpartySession) {
             override fun checkTransaction(stx: SignedTransaction) = requireThat {
                 val output = stx.tx.outputs.single().data
-                "The output must be a CarState" using (output is CarState)
+                "The output must be a GadgetState" using (output is GadgetState)
             }
         }
         val txWeJustSignedId = subFlow(signedTransactionFlow)
