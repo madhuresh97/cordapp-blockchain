@@ -1,0 +1,65 @@
+version: 2
+updates:
+- package-ecosystem: gradle
+  directory: "/"
+  schedule:
+    interval: weekly
+    time: "23:30"
+    timezone: Asia/Calcutta
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: org.jetbrains.kotlin:kotlin-test
+    versions:
+    - 1.4.21-2
+    - 1.4.30
+    - 1.4.31
+    - 1.4.32
+  - dependency-name: org.jetbrains.kotlin:kotlin-stdlib-jdk8
+    versions:
+    - 1.4.21-2
+    - 1.4.30
+    - 1.4.31
+    - 1.4.32
+  - dependency-name: org.jetbrains.kotlin:kotlin-gradle-plugin
+    versions:
+    - 1.4.21-2
+    - 1.4.30
+    - 1.4.31
+    - 1.4.32
+  - dependency-name: org.springframework.boot:spring-boot-gradle-plugin
+    versions:
+    - 2.4.3
+    - 2.4.4
+  - dependency-name: org.springframework.boot:spring-boot-starter-websocket
+    versions:
+    - 2.4.2
+    - 2.4.3
+    - 2.4.4
+  - dependency-name: net.corda:corda-rpc
+    versions:
+    - 4.7-HC03
+  - dependency-name: net.corda:corda-node-driver
+    versions:
+    - 4.7-HC03
+  - dependency-name: net.corda:corda
+    versions:
+    - 4.7-HC03
+  - dependency-name: net.corda:corda-node-api
+    versions:
+    - 4.7-HC03
+  - dependency-name: net.corda:corda-core
+    versions:
+    - 4.7-HC03
+  - dependency-name: net.corda.plugins:quasar-utils
+    versions:
+    - 5.0.12
+  - dependency-name: net.corda.plugins:cordformation
+    versions:
+    - 5.0.12
+  - dependency-name: net.corda.plugins:cordapp
+    versions:
+    - 5.0.12
+  - dependency-name: junit:junit
+    versions:
+    - 4.13.1
+  rebase-strategy: disabled
